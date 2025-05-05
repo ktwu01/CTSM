@@ -5,7 +5,7 @@ module clm_varctl
   ! Module containing run control variables
   !
   ! !USES:
-  use shr_kind_mod, only: r8 => shr_kind_r8, SHR_KIND_CL
+  use shr_kind_mod, only: r8 => shr_kind_r8, SHR_KIND_CX
   use shr_sys_mod , only: shr_sys_abort ! cannot use endrun here due to circular dependency
   !
   ! !PUBLIC MEMBER FUNCTIONS:
@@ -21,7 +21,7 @@ module clm_varctl
   !
   integer , parameter, public ::  iundef = -9999999
   real(r8), parameter, public ::  rundef = -9999999._r8
-  integer , parameter, public ::  fname_len = SHR_KIND_CL   ! max length of file names in this module
+  integer , parameter, public ::  fname_len = SHR_KIND_CX   ! max length of file names in this module
   !----------------------------------------------------------
   !
   ! Run control variables
@@ -109,6 +109,7 @@ module clm_varctl
 
   character(len=fname_len), public :: finidat    = ' '        ! initial conditions file name
   character(len=fname_len), public :: fsurdat    = ' '        ! surface data file name
+  character(len=fname_len), public :: hillslope_file = ' '    ! hillslope data file name
   character(len=fname_len), public :: paramfile  = ' '        ! ASCII data file with PFT physiological constants
   character(len=fname_len), public :: nrevsn     = ' '        ! restart data file name for branch run
   character(len=fname_len), public :: fsnowoptics  = ' '      ! snow optical properties file name
@@ -277,16 +278,24 @@ module clm_varctl
   logical, public :: do_sno_oc = .false.  ! control to include organic carbon (OC) in snow
 
   !----------------------------------------------------------
-  ! DUST emission method
-  !----------------------------------------------------------
-  character(len=25), public :: dust_emis_method = 'Zender_2003'  ! Dust emisison method to use: Zender_2003 or Leung_2023
-
-  !----------------------------------------------------------
   ! C isotopes
   !----------------------------------------------------------
 
   logical, public :: use_c13 = .false.                  ! true => use C-13 model
   logical, public :: use_c14 = .false.                  ! true => use C-14 model
+  !----------------------------------------------------------
+  ! CN matrix
+  !----------------------------------------------------------  
+  logical, public :: spinup_matrixcn = .false.  !.false.              ! true => use acc spinup
+  logical, public :: hist_wrt_matrixcn_diag = .false.!.false.              ! true => use acc spinup
+  ! SASU 
+  integer, public :: nyr_forcing  = 10   ! length of forcing years for the spin up. eg. if DATM_YR_START=1901;DATM_YR_END=1920, then nyr_forcing = 20
+  integer, public :: nyr_SASU     = 1    ! length of each semi-analytic solution. eg. nyr_SASU=5, analytic solutions will be calculated every five years.
+                                         ! nyr_SASU=1: the fastest SASU, but inaccurate; nyr_SASU=nyr_forcing(eg. 20): the lowest SASU but accurate
+  integer, public :: iloop_avg    = -999 ! The restart file will be based on the average of all analytic solutions within the iloop_avg^th loop. 
+                                         ! eg. if nyr_forcing = 20, iloop_avg = 8, the restart file in yr 160 will be based on analytic solutions from yr 141 to 160.
+                                         ! The number of the analytic solutions within one loop depends on ratio between nyr_forcing and nyr_SASU.
+                                         ! eg. if nyr_forcing = 20, nyr_SASU = 5, number of analytic solutions is 20/5=4
 
   ! BUG(wjs, 2018-10-25, ESCOMP/ctsm#67) There is a bug that causes incorrect values for C
   ! isotopes if running init_interp from a case without C isotopes to a case with C
@@ -321,7 +330,16 @@ module clm_varctl
                                                                         ! > 1 for external data (lightning and/or anthropogenic ignitions)
                                                                         ! see bld/namelist_files/namelist_definition_clm4_5.xml for details
   logical, public            :: use_fates_tree_damage = .false.         ! true => turn on tree damage module
-  logical, public            :: use_fates_logging = .false.             ! true => turn on logging module
+  character(len=256), public :: fates_harvest_mode = ''                 ! five different harvest modes; see namelist definition
+  character(len=256), public :: fates_stomatal_model = ''               ! stomatal conductance model, Ball-berry or Medlyn
+  character(len=256), public :: fates_stomatal_assimilation = ''        ! net or gross assimilation modes
+  character(len=256), public :: fates_leafresp_model = ''               ! Leaf maintenance respiration model, Ryan or Atkin
+  character(len=256), public :: fates_cstarvation_model = ''            ! linear or exponential function
+  character(len=256), public :: fates_regeneration_model = ''           ! default, TRS, or TRS without seed dynamics
+  character(len=256), public :: fates_radiation_model = ''              ! Norman or two-stream radiation model
+  character(len=256), public :: fates_hydro_solver = ''                 ! 1D Taylor, 2D Picard, 2D Newton
+  character(len=256), public :: fates_photosynth_acclimation = ''       ! nonacclimating, kumarathunge2019
+  character(len=256), public :: fates_electron_transport_model = ''     ! Johnson-Berry 2021 or Farquhar von Caemmerer and Berry 1980
   logical, public            :: use_fates_planthydro = .false.          ! true => turn on fates hydro
   logical, public            :: use_fates_cohort_age_tracking = .false. ! true => turn on cohort age tracking
   logical, public            :: use_fates_ed_st3   = .false.            ! true => static stand structure
@@ -329,6 +347,8 @@ module clm_varctl
   logical, public            :: use_fates_inventory_init = .false.      ! true => initialize fates from inventory
   logical, public            :: use_fates_fixed_biogeog = .false.       ! true => use fixed biogeography mode
   logical, public            :: use_fates_nocomp = .false.              ! true => use no comopetition mode
+  logical, public            :: use_fates_daylength_factor = .false.    ! true => enable fates to use host land model daylength factor
+
 
   ! FATES history dimension level
   ! fates can produce history at either the daily timescale (dynamics)
@@ -344,7 +364,10 @@ module clm_varctl
   integer, dimension(2), public   :: fates_history_dimlevel = (/2,2/)
   
   logical, public            :: use_fates_luh = .false.                 ! true => use FATES landuse data mode
+  logical, public            :: use_fates_lupft = .false.               ! true => use FATES landuse x pft static mapping mode
+  logical, public            :: use_fates_potentialveg = .false.        ! true => FATES potential veg only
   character(len=256), public :: fluh_timeseries = ''                    ! filename for fates landuse timeseries data
+  character(len=256), public :: flandusepftdat = ''                     ! filename for fates landuse x pft data
   character(len=256), public :: fates_inventory_ctrl_filename = ''      ! filename for inventory control
 
   ! FATES SP AND FATES BGC are MUTUTALLY EXCLUSIVE, THEY CAN'T BOTH BE ON
@@ -391,6 +414,8 @@ module clm_varctl
   logical, public :: use_cropcal_streams = .false.
   logical, public :: use_cropcal_rx_swindows = .false.
   logical, public :: use_cropcal_rx_cultivar_gdds = .false.
+  logical, public :: adapt_cropcal_rx_cultivar_gdds = .false.
+  logical, public :: flush_gdd20 = .false.
 
   !----------------------------------------------------------
   ! biomass heat storage switch
@@ -418,7 +443,7 @@ module clm_varctl
 
 
   !----------------------------------------------------------
-  ! excess ice physics switch
+  ! excess ice physics switch and params
   !----------------------------------------------------------
   logical, public :: use_excess_ice = .false. ! true. => use excess ice physics
 
@@ -427,12 +452,6 @@ module clm_varctl
   !----------------------------------------------------------
 
   logical, public :: use_hydrstress = .false. ! true => use plant hydraulic stress calculation
-
-  !----------------------------------------------------------
-  ! dynamic root switch
-  !----------------------------------------------------------
-
-  logical, public :: use_dynroot = .false. ! true => use dynamic root module
 
   !----------------------------------------------------------
   ! glacier_mec control variables: default values (may be overwritten by namelist)
@@ -516,7 +535,7 @@ module clm_varctl
   !----------------------------------------------------------
   ! To retrieve namelist
   !----------------------------------------------------------
-  character(len=SHR_KIND_CL), public :: NLFilename_in ! Namelist filename
+  character(len=SHR_KIND_CX), public :: NLFilename_in ! Namelist filename
   !
   logical, private :: clmvarctl_isset = .false.
  !-----------------------------------------------------------------------
