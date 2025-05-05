@@ -27,7 +27,7 @@ begin
 ; To run this script, just enter in your case name and username below. 
 ;  AND set the annual_hist flag to "True" if your case has annual mean history files or set 
 ;  annual_hist flag to "False" if your case has monthly mean history files.
-; The script ; assumes that your history files are in /glade/scratch/$username/archive/$caseid/lnd/hist
+; The script ; assumes that your history files are in /glade/derecho/scratch/$username/archive/$caseid/lnd/hist
 ;=======================================================================;
 
   caseid = "cesm20exp10j_1deg_CPLHST_nndep_1850pAD"
@@ -41,7 +41,7 @@ begin
   do_plot = "True"
 ;=======================================================================;
 
-  data_dir = "/glade/scratch/"+username+"/archive/"+caseid+"/lnd/hist/"
+  data_dir = "/glade/derecho/scratch/"+username+"/archive/"+caseid+"/lnd/hist/"
 
 ; Thresholds 
   glob_thresh_fsh = 0.02         ; global threshold for FSH equilibrium (delta W m-2 / yr)

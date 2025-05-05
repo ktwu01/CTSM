@@ -30,7 +30,7 @@ begin
 ;  annual_hist flag to False if your case has monthly mean history files.
 ;  AND set the region (supported options: Global, Arctic, SPT).
 ;  AND set the subper (subsampling period in years, number of years that atm forcing repeats).
-; The script assumes that your history files are in /glade/scratch/$username/archive/$caseid/lnd/hist
+; The script assumes that your history files are in /glade/derecho/scratch/$username/archive/$caseid/lnd/hist
 ; You need a run consisting of at least three cycles of atmospheric data
 ;=======================================================================;
 
@@ -54,7 +54,7 @@ begin
 ; do_plot = False
 ;=======================================================================;
 
-  data_dir = "/glade/scratch/"+username+"/archive/"+caseid+"/lnd/hist/"
+  data_dir = "/glade/derecho/scratch/"+username+"/archive/"+caseid+"/lnd/hist/"
   if ( systemfunc("test -d "+data_dir+"; echo $?" ) .ne. 0 )then
      print( "Input directory does not exist or not found: "+data_dir );
      print( "Make sure username and caseid and base directory is set correctly" )

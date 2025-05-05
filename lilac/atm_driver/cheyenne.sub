@@ -14,7 +14,7 @@
 #ml ???
 
 ### Set TMPDIR as recommended
-setenv TMPDIR /glade/scratch/$USER
+setenv TMPDIR /glade/derecho/scratch/$USER
 mkdir -p $TMPDIR
 
 echo "hello"

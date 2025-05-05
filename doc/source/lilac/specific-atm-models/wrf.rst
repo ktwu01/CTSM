@@ -87,13 +87,13 @@ or sourcing ``ctsm_build_environment.csh`` for Cshell:
 Set makefile variables from CTSM needed for the WRF build by setting the following environment.
 For example for Bash::
 
-    export WRF_CTSM_MKFILE=/glade/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/bld/ctsm.mk
+    export WRF_CTSM_MKFILE=/glade/derecho/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/bld/ctsm.mk
 
 or for Cshell:
 
 .. code-block:: Tcsh
 
-    setenv WRF_CTSM_MKFILE /glade/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/bld/ctsm.mk
+    setenv WRF_CTSM_MKFILE /glade/derecho/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/bld/ctsm.mk
 
 .. warning::
     Please note that you should point to the absolute path of the ``ctsm.mk`` file.
@@ -324,8 +324,8 @@ Run the script ``make_runtime_inputs`` to create ``lnd_in`` and
 
 Modify ``lilac_in`` as needed. For this example, you can use the following options::
 
- atm_mesh_filename = '/glade/scratch/negins/wrf_ctsm_files/wrf2ctsm_land_conus_ESMFMesh_c20201110.nc'
- lnd_mesh_filename = '/glade/scratch/negins/wrf_ctsm_files/wrf2ctsm_land_conus_ESMFMesh_c20201110.nc'
+ atm_mesh_filename = '/glade/derecho/scratch/negins/wrf_ctsm_files/wrf2ctsm_land_conus_ESMFMesh_c20201110.nc'
+ lnd_mesh_filename = '/glade/derecho/scratch/negins/wrf_ctsm_files/wrf2ctsm_land_conus_ESMFMesh_c20201110.nc'
 
 Run ``download_input_data`` script to download any of CTSM's standard input
 files that are needed based on settings in ``lnd_in`` and ``lilac_in``::
@@ -335,9 +335,9 @@ files that are needed based on settings in ``lnd_in`` and ``lilac_in``::
 Next, copy or link ``lnd_in``, ``lnd_modelio.nml`` and ``lilac_in`` to the direcotory
 from which you will be running the model (e.g. WRF/run) ::
 
-    ln -sf /glade/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/runtime_inputs/lnd_in .
-    ln -sf /glade/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/runtime_inputs/lilac_in .
-    ln -sf /glade/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/runtime_inputs/lnd_modelio.nml .
+    ln -sf /glade/derecho/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/runtime_inputs/lnd_in .
+    ln -sf /glade/derecho/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/runtime_inputs/lilac_in .
+    ln -sf /glade/derecho/scratch/$USER/WRF-CTSM/CTSM/ctsm_build_dir/runtime_inputs/lnd_modelio.nml .
 
 Run wrf.exe
 -----------
@@ -348,9 +348,9 @@ in our directory.
 If you plan to use this example's preexisting files, copy
 the following files to your WRF run directory::
 
-    cp /glade/scratch/negins/wrf_ctsm_files/namelist.input .
-    cp /glade/scratch/negins/wrf_ctsm_files/wrfinput_d01 .
-    cp /glade/scratch/negins/wrf_ctsm_files/wrfbdy_d01 .
+    cp /glade/derecho/scratch/negins/wrf_ctsm_files/namelist.input .
+    cp /glade/derecho/scratch/negins/wrf_ctsm_files/wrfinput_d01 .
+    cp /glade/derecho/scratch/negins/wrf_ctsm_files/wrfbdy_d01 .
 
 Now run WRF-CTSM. On Cheyenne this means submitting a batch job to PBS (Pro workload management system).
 Please check NCAR CISL's `instructions on running a batch job on Cheyenne.

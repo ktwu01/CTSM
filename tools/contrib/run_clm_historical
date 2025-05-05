@@ -114,7 +114,7 @@ qcmd -- ./case.build
 #########################################################################################
 
 
-set WDIR = '/glade/scratch/'$USER'/'$CASENAME'/run/'
+set WDIR = '/glade/derecho/scratch/'$USER'/'$CASENAME'/run/'
 set DONE_RUNA = 0
 set DONE_ARCHIVE = 0
 set RESTART_FILE = $WDIR$CASENAME'.clm2.r.1871-01-01-00000.nc'
@@ -165,7 +165,7 @@ end
 #########################################################################################
 
 
-set WDIR = '/glade/scratch/'$USER'/'$CASENAME'/run/'
+set WDIR = '/glade/derecho/scratch/'$USER'/'$CASENAME'/run/'
 set DDIR = $WDIR'restart_dump/'
 set DONE_RUNA = 0
 set DONE_ARCHIVE = 0

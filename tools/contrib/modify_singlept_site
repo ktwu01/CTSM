@@ -34,10 +34,10 @@ sitename='US-Ha1'
 site_dir='../PTCLM/PTCLM_sitedata/'
 
 #--  Specify original file
-fsurf = '/glade/scratch/'+myname+'/single_point/surfdata_0.9x1.25_16pfts_CMIP6_simyr1850_287.8_42.5_c170706.nc'
+fsurf = '/glade/derecho/scratch/'+myname+'/single_point/surfdata_0.9x1.25_16pfts_CMIP6_simyr1850_287.8_42.5_c170706.nc'
 
 #--  Output directory  ---------------------------------
-dir_output='/glade/scratch/'+myname+'/single_point/'
+dir_output='/glade/derecho/scratch/'+myname+'/single_point/'
 
 #-- Specify new file name  -----------------------------
 command='date "+%y%m%d"'
